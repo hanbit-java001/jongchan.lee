@@ -63,10 +63,6 @@
 	position: relative;
 }
 
-#divAddSchedule .form-control[readonly] {
-	background-color: white;
-}
-
 .hanbit-schedule-detail {
 	width: 100%;
 }
@@ -79,10 +75,6 @@
 
 .hanbit-schedule-detail .column-value {
 	width: 80%;
-}
-
-.bottom-buttons {
-	text-align: center;
 }
 </style>
 </head>
@@ -97,9 +89,6 @@
 				<div id="btnPrevMonth" class="hanbit-top-button right arrow">
 					<i class="material-icons hanbit-abs-center">keyboard_arrow_left</i>
 				</div>
-				<div id="btnToday" class="hanbit-top-button right">
-					<i class="material-icons hanbit-abs-center">today</i>
-				</div>
 				<div id="btnNextMonth" class="hanbit-top-button right arrow">
 					<i class="material-icons hanbit-abs-center">keyboard_arrow_right</i>
 				</div>
@@ -109,10 +98,10 @@
 			</div>
 
 			<div id="btnGroupAddSchedule">
-				<div class="btnApplyAddSchedule hanbit-top-button right">
+				<div id="btnApplyAddSchedule" class="hanbit-top-button right">
 					<i class="material-icons hanbit-abs-center">done</i>
 				</div>
-				<div class="btnCancelAddSchedule hanbit-top-button right">
+				<div id="btnCancelAddSchedule" class="hanbit-top-button right">
 					<i class="material-icons hanbit-abs-center">clear</i>
 				</div>
 			</div>
@@ -137,11 +126,7 @@
 			</div>
 			<div class="form-group">
     			<label for="txtMemo">메모</label>
-    			<textarea class="form-control" id="txtMemo" placeholder="메모" rows="3"></textarea>
-			</div>
-			<div class="bottom-buttons">
-				<button class="btnApplyAddSchedule btn btn-success">추가</button>
-				<button class="btnCancelAddSchedule btn btn-danger">취소</button>
+    			<textarea class="form-control" id="txtMemo" placeholder="메모"></textarea>
 			</div>
 		</div>
 	</div>
@@ -155,7 +140,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
 
-    $("#calendar").fullCalendar({
+    $('#calendar').fullCalendar({
     	locale: "ko",
     	height: "auto",
 
@@ -166,30 +151,20 @@ $(document).ready(function() {
     	},
 
     	dayClick: function(date) {
-    		showAddSchedule(date);
+    		alert(date.format('MMMM Do YYYY, h:mm:ss a'));
         }
     });
 
-    $("#txtStartDt").datetimepicker({
+    $('#txtStartDt').datetimepicker({
     	locale: "ko",
     	format: "YYYY-MM-DD a hh:mm",
-    	stepping: 15,
-    	ignoreReadonly: true,
-    	showClose: true
+    	stepping: 15
     });
-
-    $("#txtEndDt").datetimepicker({
+    $('#txtEndDt').datetimepicker({
     	locale: "ko",
     	format: "YYYY-MM-DD a hh:mm",
-    	stepping: 15,
-    	ignoreReadonly: true,
-    	showClose: true
+    	stepping: 15
     });
-
-	if (navigator.userAgent.indexOf("Mobile") > -1) {
-		$("#txtStartDt").attr("readonly", "readonly");
-		$("#txtEndDt").attr("readonly", "readonly");
-	}
 
     var rangeFormat = "YYYYMMDDHHmm";
     var currentMoment = moment();
@@ -207,32 +182,18 @@ $(document).ready(function() {
     	showNextMonth();
     });
 
-    $("#btnToday").on("click", function() {
-    	showThisMonth();
-    });
-
-    function showAddSchedule(date) {
+    $("#btnAddSchedule").on("click", function() {
 		$("#btnGroupCalendar").hide();
 		$("#btnGroupAddSchedule").show();
 
 		$("#calendar").hide();
 		$("#divAddSchedule").show();
 
-		$("#txtTitle").val("");
-		$("#txtStartDt").data("DateTimePicker").date(date);
-		$("#txtEndDt").data("DateTimePicker").date(date.add(1, "hour"));
-		$("#txtMemo").val("");
-    }
+		$("#txtStartDt").data("DateTimePicker").date(moment());
+		$("#txtEndDt").data("DateTimePicker").date(moment().add(1, "hour"));
+    });
 
-    function hideAddSchedule() {
-		$("#btnGroupAddSchedule").hide();
-		$("#btnGroupCalendar").show();
-
-		$("#divAddSchedule").hide();
-		$("#calendar").show();
-    }
-
-    function addSchedule() {
+    $("#btnApplyAddSchedule").on("click", function() {
 		var title = $("#txtTitle").val();
 		var startDt = $("#txtStartDt").val();
 		var endDt = $("#txtEndDt").val();
@@ -279,54 +240,20 @@ $(document).ready(function() {
 			dataType: "json",
 			data: JSON.stringify(schedule)
 		}).done(function(result) {
-			$("#btnGroupAddSchedule").hide();
-			$("#btnGroupCalendar").show();
 
-			$("#divAddSchedule").hide();
-			$("#calendar").show();
-
-			addScheduleToCalendar(result);
-		}).fail(function() {
-			alert("사용자가 폭주하여 잠시 후 사용해주세요.");
 		});
-    }
-
-    function addScheduleToCalendar(originEvent) {
-		  var event = {};
-
-		  event.title = originEvent.title;
-		  event.start = moment(originEvent.startDt, rangeFormat).format("YYYY-MM-DDTHH:mm");
-		  event.end = moment(originEvent.endDt, rangeFormat).format("YYYY-MM-DDTHH:mm");
-
-		  $("#calendar").fullCalendar("renderEvent", event);
-	}
-
-    $("#btnAddSchedule").on("click", function() {
-    	showAddSchedule(moment());
     });
 
-    $(".btnApplyAddSchedule").on("click", function() {
-    	addSchedule();
+    $("#btnCancelAddSchedule").on("click", function() {
+		$("#btnGroupAddSchedule").hide();
+		$("#btnGroupCalendar").show();
+
+		$("#divAddSchedule").hide();
+		$("#calendar").show();
     });
-
-    $(".btnCancelAddSchedule").on("click", function() {
-    	hideAddSchedule();
-    });
-
-    function showThisMonth() {
-    	if (currentMoment.format("YYYYMM") == moment().format("YYYYMM")) {
-    		return;
-    	}
-
-    	$("#calendar").fullCalendar("today");
-
-    	currentMoment = moment();
-
-    	getMonthlySchedules();
-    }
 
     function showPrevMonth() {
-    	$("#calendar").fullCalendar("prev");
+    	$('#calendar').fullCalendar("prev");
 
     	currentMoment = currentMoment.subtract(1, "month");
 
@@ -334,7 +261,7 @@ $(document).ready(function() {
     }
 
     function showNextMonth() {
-    	$("#calendar").fullCalendar("next");
+    	$('#calendar').fullCalendar("next");
 
     	currentMoment = currentMoment.add(1, "month");
 
@@ -358,7 +285,13 @@ $(document).ready(function() {
 	    	}
 	    }).done(function(result) {
 	    	  for (var i=0;i<result.length;i++) {
-	    		  addScheduleToCalendar(result[i]);
+	    		  var event = {};
+
+	    		  event.title = result[i].title;
+	    		  event.start = moment(result[i].startDt, rangeFormat).format("YYYY-MM-DDTHH:mm");
+	    		  event.end = moment(result[i].endDt, rangeFormat).format("YYYY-MM-DDTHH:mm");
+
+	    		  $('#calendar').fullCalendar("renderEvent", event);
 	    	  }
 	    }).fail(function() {
 			alert("사용자가 폭주하여 잠시 후 사용해주세요.");
