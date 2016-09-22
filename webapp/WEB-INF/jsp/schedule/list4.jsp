@@ -100,71 +100,28 @@ $(document).ready(function() {
         }
     });
 
-    var currentMoment = moment();
-
-    var range = {
-       	start: currentMoment.startOf("month").format("YYYYMMDDHHmm"),
-       	end: currentMoment.endOf("month").format("YYYYMMDDHHmm")
-    };
-
-
     $("#btnPrevMonth").on("click", function() {
-    	showPrevMonth();
+    	$('#calendar').fullCalendar("prev");
     });
 
     $("#btnNextMonth").on("click", function() {
-    	showNextMonth();
+    	$('#calendar').fullCalendar("next");
     });
 
-    var rangeFormat = "YYYYMMDDHHmm";
+    jQuery.ajax({
+    	url: "/api/schedule/list?startDt=20160901&endDt=20160930"
+    }).done(function(data) {
+    	  for (var i=0;i<data.length;i++) {
+    		  var event = {};
 
-    function showPrevMonth() {
-    	$('#calendar').fullCalendar("prev");
+    		  event.title = data[i].title;
+    		  event.start = moment(data[i].startDt, "YYYYMMDDHHmm").format("YYYY-MM-DDTHH:mm");
+    		  event.end = moment(data[i].endDt, "YYYYMMDDHHmm").format("YYYY-MM-DDTHH:mm");
 
-    	currentMoment = currentMoment.subtract(1, "month");
+    		  $('#calendar').fullCalendar("renderEvent", event, true);
+    	  }
+    });
 
-    	getMonthlySchedules();
-    }
-
-    function showNextMonth() {
-    	$('#calendar').fullCalendar("next");
-
-    	currentMoment = currentMoment.add(1, "month");
-
-    	getMonthlySchedules();
-    }
-
-    function getMonthlySchedules() {
-    	range.start = currentMoment.startOf("month").format(rangeFormat);
-    	range.end = currentMoment.endOf("month").format(rangeFormat);
-
-    	getSchedules(range.start, range.end);
-    }
-
-    function getSchedules(startDt, endDt) {
-	    jQuery.ajax({
-	    	url: "/api/schedule/list",
-	    	method: "GET",
-	    	data: {
-	    		startDt: startDt,
-	    		endDt: endDt
-	    	}
-	    }).done(function(data) {
-	    	  for (var i=0;i<data.length;i++) {
-	    		  var event = {};
-
-	    		  event.title = data[i].title;
-	    		  event.start = moment(data[i].startDt, rangeFormat).format("YYYY-MM-DDTHH:mm");
-	    		  event.end = moment(data[i].endDt, rangeFormat).format("YYYY-MM-DDTHH:mm");
-
-	    		  $('#calendar').fullCalendar("renderEvent", event);
-	    	  }
-	    }).fail(function() {
-			alert("사용자가 폭주하여 잠시 후 사용해주세요.");
-	    });
-    }
-
-    getSchedules(range.start, range.end);
 });
 </script>
 </body>
