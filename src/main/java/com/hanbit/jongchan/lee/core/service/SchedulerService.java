@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.hanbit.jongchan.lee.core.dao.ScheduleDAO;
 import com.hanbit.jongchan.lee.core.vo.ScheduleVO;
+import com.hanbit.jongchan.lee.core.service.SchedulerService;
 
 @Service
 public class SchedulerService {
@@ -49,6 +50,10 @@ public class SchedulerService {
 		String uniqueId = time + threadId;
 
 		return uniqueId;
+	}
+
+	public int countSchedule(String startDt, String endDt) {
+		return scheduleDAO.countSchedule(startDt, endDt);
 	}
 
 }
