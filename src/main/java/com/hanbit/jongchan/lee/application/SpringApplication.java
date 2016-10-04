@@ -4,8 +4,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.Log4jConfigurer;
 
-import com.hanbit.jongchan.lee.core.dao.MybatisExampleDAO;
-
+import com.hanbit.jongchan.lee.core.service.MemberService;
+import com.hanbit.jongchan.lee.core.service.SecurityService;
+import com.hanbit.jongchan.lee.core.vo.ScheduleVO;
 
 public class SpringApplication {
 
@@ -17,20 +18,9 @@ public class SpringApplication {
 					new ClassPathXmlApplicationContext("spring/applicationContext-core.xml",
 							"spring/applicationContext-dao.xml");
 
-			/*SchedulerService schedulerService = applicationContext.getBean(SchedulerService.class);
+			SecurityService service = applicationContext.getBean(SecurityService.class);
 
-			ScheduleVO schedule = new ScheduleVO();
-			schedule.setScheduleId(String.valueOf(System.currentTimeMillis()));
-			schedule.setTitle("저녁");
-			schedule.setMemo("반찬 뭘까");
-			schedule.setStartDt("201609131830");
-			schedule.setEndDt("201609131930");
-
-			int result = schedulerService.addSchedule(schedule);*/
-
-			MybatisExampleDAO mybatisExampleDAO = applicationContext.getBean(MybatisExampleDAO.class);
-
-			mybatisExampleDAO.logSystdate();
+			System.out.println(service.getValidMember("aaa", "ccc"));
 		}
 		catch (Exception e) {
 			e.printStackTrace();

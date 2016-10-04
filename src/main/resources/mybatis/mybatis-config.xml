@@ -7,4 +7,10 @@
 		<setting name="mapUnderscoreToCamelCase" value="true" />
 	</settings>
 
+	<typeAliases>
+		<typeAlias type="com.hanbit.jongchan.lee.core.vo.ScheduleVO" alias="ScheduleVO" />
+		<typeAlias type="com.hanbit.jongchan.lee.core.vo.MemberVO" alias="MemberVO" />
+	</typeAliases>
+
+
 </configuration>
